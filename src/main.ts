@@ -1,17 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const config = app.get(ConfigService);
 
-  app.enableCors({
-    origin: ['http://localhost:4200', 'https://your-frontend.vercel.app'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  const allowedOriginsEnv = config.get<string>('CORS_ALLOWED_ORIGINS');
+  const parsedOrigins =
+    allowedOriginsEnv
+      ?.split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean) ?? ['http://localhost:4200'];
+
+  const corsOptions: CorsOptions = {
+    origin: parsedOrigins.includes('*') ? true : parsedOrigins,
     credentials: true,
-  });
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  };
 
-  app.setGlobalPrefix('api'); // <--- add this
+  app.enableCors(corsOptions);
+
+  app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,7 +33,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = config.get<number>('PORT') ?? 3000;
+  await app.listen(port);
 }
 
 bootstrap();

@@ -32,6 +32,20 @@
 $ npm install
 ```
 
+## Environment variables
+
+The API relies on a few runtime variables that you can place inside a local `.env` file or configure in your hosting provider:
+
+```bash
+# Required
+JWT_SECRET="super-secret-value"
+
+# Optional (defaults to http://localhost:4200)
+CORS_ALLOWED_ORIGINS="http://localhost:4200,https://your-frontend.vercel.app"
+```
+
+`CORS_ALLOWED_ORIGINS` accepts a comma-separated list of exact origins. Use `*` to mirror any requesting origin when you explicitly want to allow every domain.
+
 ## Compile and run the project
 
 ```bash
