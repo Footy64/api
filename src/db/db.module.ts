@@ -1,9 +1,8 @@
-import {Module} from '@nestjs/common';
-import {DRIZZLE, DrizzleProvider} from './drizzle.provider';
+import { Module } from '@nestjs/common';
+import { DRIZZLE, DrizzleProvider } from './drizzle.provider';
 
 @Module({
-    providers: [DrizzleProvider],
-    exports: [DRIZZLE],
+  providers: [DrizzleProvider],
+  exports: [DRIZZLE],
 })
-export class DbModule {
-}
+export class DbModule {}
