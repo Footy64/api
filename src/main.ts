@@ -9,11 +9,13 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   const allowedOriginsEnv = config.get<string>('CORS_ALLOWED_ORIGINS');
-  const parsedOrigins =
-    allowedOriginsEnv
-      ?.split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean) ?? ['http://localhost:4200'];
+  const parsedOrigins = allowedOriginsEnv
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? [
+    'http://localhost:4200',
+    'https://footy69.vercel.app/',
+  ];
 
   const corsOptions: CorsOptions = {
     origin: parsedOrigins.includes('*') ? true : parsedOrigins,
