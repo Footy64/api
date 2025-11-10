@@ -8,17 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
-  const allowedOriginsEnv = config.get<string>('CORS_ALLOWED_ORIGINS');
-  const parsedOrigins = allowedOriginsEnv
-    ?.split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean) ?? [
-    'http://localhost:4200',
-    'https://footy69.vercel.app/',
-  ];
-
   const corsOptions: CorsOptions = {
-    origin: parsedOrigins.includes('*') ? true : parsedOrigins,
+    origin: true,
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   };
