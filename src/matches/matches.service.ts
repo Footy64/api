@@ -53,7 +53,12 @@ export class MatchesService {
     const memberships = await this.db
       .select({ teamId: teamMembers.teamId })
       .from(teamMembers)
-      .where(and(eq(teamMembers.userId, userId), inArray(teamMembers.teamId, teamIds)));
+      .where(
+        and(
+          eq(teamMembers.userId, userId),
+          inArray(teamMembers.teamId, teamIds),
+        ),
+      );
     const found = new Set(memberships.map((row: any) => row.teamId));
     if (found.size === 0) {
       throw new ForbiddenException('You must be a member of one of the teams');
@@ -177,7 +182,10 @@ export class MatchesService {
   }
 
   async updateScore(matchId: number, userId: number, dto: UpdateScoreDto) {
-    const matchQuery = this.db.select().from(matches).where(eq(matches.id, matchId));
+    const matchQuery = this.db
+      .select()
+      .from(matches)
+      .where(eq(matches.id, matchId));
     const match = (await matchQuery.get?.()) ?? (await matchQuery)[0];
     if (!match) {
       throw new NotFoundException('Match not found');

@@ -1,4 +1,10 @@
-import { Inject, Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { and, eq, inArray } from 'drizzle-orm';
 import { DRIZZLE } from '../db/drizzle.provider';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -13,7 +19,10 @@ export class TeamsService {
 
   private async ensureUsersExist(userIds: number[]) {
     if (!userIds.length) return;
-    const rows = await this.db.select({ id: users.id }).from(users).where(inArray(users.id, userIds));
+    const rows = await this.db
+      .select({ id: users.id })
+      .from(users)
+      .where(inArray(users.id, userIds));
     const found = new Set(rows.map((r: { id: number }) => r.id));
     const missing = userIds.filter((id) => !found.has(id));
     if (missing.length) {
@@ -50,9 +59,9 @@ export class TeamsService {
 
     const inserted = (await insertQuery.get?.()) ?? (await insertQuery)[0];
 
-    await this.db.insert(teamMembers).values(
-      memberIds.map((userId) => ({ teamId: inserted.id, userId })),
-    );
+    await this.db
+      .insert(teamMembers)
+      .values(memberIds.map((userId) => ({ teamId: inserted.id, userId })));
 
     return this.getTeam(inserted.id);
   }
@@ -94,7 +103,10 @@ export class TeamsService {
     const teamIds = rows.map((r: { teamId: number }) => r.teamId);
     if (!teamIds.length) return [];
 
-    const teamsRows = await this.db.select().from(teams).where(inArray(teams.id, teamIds));
+    const teamsRows = await this.db
+      .select()
+      .from(teams)
+      .where(inArray(teams.id, teamIds));
     const memberRows = await this.db
       .select({
         teamId: teamMembers.teamId,
@@ -130,7 +142,9 @@ export class TeamsService {
     const query = this.db
       .select()
       .from(teamMembers)
-      .where(and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, userId)));
+      .where(
+        and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, userId)),
+      );
     const membership = (await query.get?.()) ?? (await query)[0];
     if (!membership) {
       throw new ForbiddenException('You are not a member of this team');
@@ -144,7 +158,9 @@ export class TeamsService {
     const existingQuery = this.db
       .select()
       .from(teamMembers)
-      .where(and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, dto.userId)));
+      .where(
+        and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, dto.userId)),
+      );
     const existing = (await existingQuery.get?.()) ?? (await existingQuery)[0];
     if (existing) {
       throw new ConflictException('User already in team');
@@ -159,7 +175,9 @@ export class TeamsService {
 
     const deleteQuery = this.db
       .delete(teamMembers)
-      .where(and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, memberId)));
+      .where(
+        and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, memberId)),
+      );
     const result = (await deleteQuery.run?.()) ?? (await deleteQuery);
     const changes = Array.isArray(result)
       ? result.length

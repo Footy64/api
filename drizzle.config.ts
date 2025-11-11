@@ -6,7 +6,7 @@ const url = process.env.TURSO_AUTH_TOKEN
   : process.env.TURSO_DATABASE_URL!;
 
 export default defineConfig({
-  schema: './src/db/schema.ts',
+  schema: './src/schema.ts',
   out: './drizzle',
   dialect: 'sqlite',
   dbCredentials: { url },
